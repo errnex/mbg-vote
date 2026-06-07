@@ -147,8 +147,8 @@ export function VoteCard({ user, currentVote }: VoteCardProps) {
         <div className="border-t border-slate-800 bg-black p-5 sm:p-7 lg:border-l lg:border-t-0">
           <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-800 bg-slate-900">
             <Image
-              src="/mbg-visual.svg"
-              alt="Ilustrasi Dapur MBG"
+              src="publik/mbg-visual.svg"
+              alt="Dapur MBG"
               fill
               priority
               className="object-cover"

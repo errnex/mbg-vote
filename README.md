@@ -1,39 +1,3 @@
-# Voting MBG dengan Login X
-
-Website voting publik menggunakan Next.js, TypeScript, Tailwind CSS, NextAuth, dan Supabase PostgreSQL. User wajib login dengan akun X/Twitter, akun X harus berusia minimal 1 bulan, dan satu `x_user_id` hanya bisa memberi satu vote.
-
-## Struktur Project
-
-```txt
-x-voting-nextjs/
-  supabase/
-    schema.sql
-  src/
-    app/
-      api/
-        auth/[...nextauth]/route.ts
-        results/route.ts
-        vote/route.ts
-      not-eligible/page.tsx
-      globals.css
-      layout.tsx
-      page.tsx
-    components/
-      LoginButton.tsx
-      LogoutButton.tsx
-      ResultsPanel.tsx
-      VoteCard.tsx
-    lib/
-      auth-options.ts
-      db.ts
-      session.ts
-      types.ts
-      x-account.ts
-    types/
-      next-auth.d.ts
-  .env.example
-  package.json
-```
 
 ## Database Supabase
 

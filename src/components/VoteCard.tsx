@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { SessionXUser, VoteChoice } from "@/lib/types";
 import { voteChoiceLabel } from "@/lib/types";
@@ -31,9 +31,7 @@ export function VoteCard({ user, currentVote }: VoteCardProps) {
   const router = useRouter();
   const [loadingChoice, setLoadingChoice] = useState<VoteChoice | null>(null);
   const [hasVoted, setHasVoted] = useState(Boolean(currentVote));
-  const [storedChoice, setStoredChoice] = useState<VoteChoice | null>(
-    currentVote
-  );
+  const [storedChoice, setStoredChoice] = useState<VoteChoice | null>(currentVote);
   const [message, setMessage] = useState<string | null>(
     currentVote ? "Kamu sudah voting." : null
   );
@@ -51,11 +49,10 @@ export function VoteCard({ user, currentVote }: VoteCardProps) {
     try {
       const response = await fetch("/api/vote", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ voteChoice })
       });
+
       const data = (await response.json().catch(() => ({}))) as VoteResponse;
 
       if (response.ok || response.status === 409) {
@@ -74,73 +71,90 @@ export function VoteCard({ user, currentVote }: VoteCardProps) {
   }
 
   return (
-    <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-soft sm:p-7">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 items-center gap-4">
-          <Image
-            src={user.profileImageUrl ?? defaultProfileImage}
-            alt={user.displayName}
-            width={64}
-            height={64}
-            className="h-16 w-16 shrink-0 rounded-full border border-slate-200 object-cover"
-          />
-          <div className="min-w-0">
-            <p className="truncate text-lg font-semibold text-slate-950">
-              {user.displayName}
+    <section className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-soft">
+      <div className="grid gap-0 lg:grid-cols-[1.04fr_0.96fr]">
+        <div className="p-5 sm:p-7">
+          <div className="flex min-w-0 items-center gap-4">
+            <Image
+              src={user.profileImageUrl ?? defaultProfileImage}
+              alt={user.displayName}
+              width={64}
+              height={64}
+              className="h-16 w-16 shrink-0 rounded-full border border-slate-700 object-cover"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-lg font-semibold text-white">
+                {user.displayName}
+              </p>
+              <p className="truncate text-sm text-slate-400">@{user.username}</p>
+              <p className="mt-1 text-xs text-slate-500">
+                Akun dibuat {formatDate(user.xCreatedAt)}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 text-left lg:mt-12">
+            <p className="text-sm font-semibold uppercase tracking-wide text-emerald-400">
+              Voting publik
             </p>
-            <p className="truncate text-sm text-slate-500">@{user.username}</p>
-            <p className="mt-1 text-xs text-slate-400">
-              Akun dibuat {formatDate(user.xCreatedAt)}
+            <h1 className="mt-3 text-3xl font-bold text-white sm:text-4xl">
+              Apakah kalian setuju dengan MBG?
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-slate-400">
+              Pilih satu jawaban. Vote tersimpan permanen berdasarkan ID akun X.
             </p>
           </div>
-        </div>
-      </div>
 
-      <div className="mt-8 text-center">
-        <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Voting publik
-        </p>
-        <h1 className="mt-3 text-3xl font-bold text-slate-950 sm:text-4xl">
-          Apakah kalian setuju dengan MBG?
-        </h1>
-      </div>
+          <div className="mt-8">
+            {hasVoted ? (
+              <div className="rounded-md border border-slate-800 bg-slate-900 px-4 py-4 text-center">
+                <p className="font-semibold text-white">Kamu sudah voting.</p>
+                {storedChoice ? (
+                  <p className="mt-1 text-sm text-slate-400">
+                    Pilihan kamu: {voteChoiceLabel(storedChoice)}
+                  </p>
+                ) : null}
+              </div>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => void submitVote("agree")}
+                  disabled={Boolean(loadingChoice)}
+                  className="min-h-12 rounded-md bg-emerald-600 px-5 py-3 text-base font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {loadingChoice === "agree" ? "Menyimpan..." : "Setuju"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void submitVote("disagree")}
+                  disabled={Boolean(loadingChoice)}
+                  className="min-h-12 rounded-md bg-red-600 px-5 py-3 text-base font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {loadingChoice === "disagree" ? "Menyimpan..." : "Tidak Setuju"}
+                </button>
+              </div>
+            )}
 
-      <div className="mt-8">
-        {hasVoted ? (
-          <div className="rounded-md border border-slate-200 bg-slate-50 px-4 py-4 text-center">
-            <p className="font-semibold text-slate-950">Kamu sudah voting.</p>
-            {storedChoice ? (
-              <p className="mt-1 text-sm text-slate-600">
-                Pilihan kamu: {voteChoiceLabel(storedChoice)}
+            {message && !hasVoted ? (
+              <p className="mt-4 rounded-md border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-100">
+                {message}
               </p>
             ) : null}
           </div>
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            <button
-              type="button"
-              onClick={() => void submitVote("agree")}
-              disabled={Boolean(loadingChoice)}
-              className="min-h-12 rounded-md bg-emerald-600 px-5 py-3 text-base font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {loadingChoice === "agree" ? "Menyimpan..." : "Setuju"}
-            </button>
-            <button
-              type="button"
-              onClick={() => void submitVote("disagree")}
-              disabled={Boolean(loadingChoice)}
-              className="min-h-12 rounded-md bg-red-600 px-5 py-3 text-base font-bold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {loadingChoice === "disagree" ? "Menyimpan..." : "Tidak Setuju"}
-            </button>
-          </div>
-        )}
+        </div>
 
-        {message && !hasVoted ? (
-          <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            {message}
-          </p>
-        ) : null}
+        <div className="border-t border-slate-800 bg-black p-5 sm:p-7 lg:border-l lg:border-t-0">
+          <div className="relative aspect-[4/3] overflow-hidden rounded-md border border-slate-800 bg-slate-900">
+            <Image
+              src="/mbg-visual.svg"
+              alt="Ilustrasi Dapur MBG"
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
